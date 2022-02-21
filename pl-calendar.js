@@ -1,0 +1,153 @@
+import { PlElement, html, css } from "polylib";
+import '@plcmp/pl-repeat';
+
+import dayjs from 'dayjs/esm/index.js';
+import isoWeek from 'dayjs/esm/plugin/isoWeek/index.js';
+import isSameOrBefore from 'dayjs/esm/plugin/isSameOrBefore/index.js';
+
+dayjs.extend(isoWeek)
+dayjs.extend(isSameOrBefore)
+
+class PlCalendar extends PlElement {
+    static get properties() {
+        return {
+            selected: { value: () => null, observer: '_dateObserver' },
+            date: { value: () => new Date(), observer: '_dateObserver' },
+            min: { value: () => null, observer: '_dateObserver' },
+            max: { value: () => null, observer: '_dateObserver' },
+            restricted: { value: () => ([]), observer: '_dateObserver' },
+            //TODO реализовать точки
+            marked: { value: () => [], observer: '_dateObserver' },
+            _weekDays: { value: () => ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'] },
+            _days: { value: () => [] }
+        }
+    }
+
+    static get css() {
+        return css`
+            :host {
+                display: flex;
+                flex-direction: column;
+                user-select: none;
+                font: var(--font-md);
+                box-sizing: border-box;
+            }
+
+            .weeks {
+                margin-top: 8px;
+                display: grid;
+                color: var(--black-lightest);
+                grid-template-columns: repeat(7, 1fr);
+                font-size: 12px;
+                line-height: 16px;
+                gap: 8px;
+            }
+
+            .weeks span {
+                width: 16px;
+                text-align: center;
+            }
+
+            .days {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                font-size: 14px;
+                line-height: 22px;
+                color: var(--grey-dark);
+                box-sizing: border-box;
+                gap: 4px;
+            }
+
+            .days div {
+                width: 28px;
+                height: 28px;
+                text-align: center;
+                cursor: pointer;
+                align-items: center;
+                display: flex;
+                justify-content: center;
+                color: var(--grey-dark);
+                visibility: hidden;
+            }
+
+            .days div[selected], .days div:hover {
+                color: var(--white) !important;
+                background: var(--primary-base);
+                border-radius: 4px;
+            }
+
+            .days div[current]:not([disabled]):nth-child(7n-1), .days div[current]:not([disabled]):nth-child(7n)
+            {
+                color: var(--negative-base);
+            }
+
+            .weeks span:nth-child(7n-1), .weeks span:nth-child(7n)
+            {
+                color: var(--negative-base);
+            }
+            
+            .days div[current] {
+                color: var(--black-base);
+                visibility: visible;
+            }
+
+            .days div[disabled] {
+                color: var(--grey-light);
+                cursor: not-allowed;
+                pointer-events: none;
+            }
+        `
+    }
+
+    static get template() {
+        return html`
+           <div class="weeks">
+                <pl-repeat items="[[_weekDays]]">
+                    <template>
+                        <span>[[item]]</span>
+                    </template>
+                </pl-repeat>
+            </div>
+            <div class="days">
+                <pl-repeat items="[[_days]]">
+                    <template>
+                        <div on-click="[[onDayClick]]" selected$="[[item.selected]]" current$="[[item.current]]" disabled$="[[item.disabled]]">
+                            [[item.formattedDay]]
+                        </div>
+                    </template>
+                </pl-repeat>
+            </div>
+        `;
+    }
+
+    _dateObserver(_dateVal) {
+        this.splice('_days', 0, this._days.length);
+        const date = dayjs(this.date).toDate();
+        const monthStart = dayjs(this.date).startOf('month');
+        const monthEnd = dayjs(this.date).endOf('month');
+        const startDate = dayjs(monthStart).startOf('isoWeek');
+        const endDate = dayjs(monthEnd).endOf('isoWeek');
+        const dateFormat = "D";
+        let day = startDate;
+        let currentMonth = date.getMonth();
+        while (day.isSameOrBefore(endDate, 'date')) {
+            let disabled = false;
+            disabled = day.isAfter(this.max, 'date') || day.isBefore(this.min, 'date') || this.restricted.some(x => dayjs(x).isSame(day, 'date'));
+            const dayInfo = {
+                day: day,
+                formattedDay: day.format(dateFormat),
+                current: currentMonth == day.month(),
+                selected: this.selected?.setHours(0,0,0,0) == day.toDate().setHours(0,0,0,0),
+                disabled: disabled
+            };
+            this.push('_days', dayInfo);
+            day = day.add(1, 'day')
+        };
+    }
+
+    onDayClick(event) {
+        this.dispatchEvent(new CustomEvent('on-day-click', { detail: { day: event.model.item.day }, bubbles: true, composed: true }))
+    }
+}
+
+customElements.define('pl-calendar', PlCalendar);
