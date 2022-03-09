@@ -25,6 +25,7 @@ class PlDateTime extends PlElement {
             variant: { type: String },
             min: { value: () => null },
             max: { value: () => null },
+            hidden: { type: Boolean, reflectToAttribute: true },
             restricted: { value: () => [] },
             _formatted: { type: String, observer: '_formattedObserver' },
             _dateMask: { type: String, value: 'DD.MM.YYYY' },
@@ -38,6 +39,10 @@ class PlDateTime extends PlElement {
             :host{
                 --content-width: 140px;
                 display: flex;
+            }
+
+            :host([hidden]) {
+                display: none;
             }
 
             .header, .footer {
