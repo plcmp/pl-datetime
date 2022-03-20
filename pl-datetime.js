@@ -37,7 +37,7 @@ class PlDateTime extends PlElement {
     static get css() {
         return css`
             :host{
-                --content-width: 140px;
+                --content-width: 120px;
                 display: flex;
             }
 
@@ -48,12 +48,13 @@ class PlDateTime extends PlElement {
             .header, .footer {
                 display: flex;
                 flex-direction: row;
-                gap: 8px;
+                gap: var(--space-sm);
                 justify-content: center;
             }
 
-            .footer {
-                margin-top: 8px;
+            pl-calendar {
+                padding-bottom: var(--space-sm);;
+                border-bottom: 1px solid var(--grey-light);
             }
 
             .footer pl-button {
@@ -62,18 +63,20 @@ class PlDateTime extends PlElement {
 
 			pl-icon {
 				cursor: pointer;
+                --pl-icon-fill-color: var(--grey-dark);
 			}
 
 			pl-icon:hover {
-				color: var(--black-light);
+                --pl-icon-fill-color: var(--text-color);
 			}
 
             pl-dropdown {
-                background: #FFFFFF;
+                background: var(--surface-color);
                 box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.12);
-                border-radius: 8px;
+                border-radius: var(--border-radius);
                 box-sizing: border-box;
-                padding: 12px;
+                padding: var(--space-md);
+                width: 220px;
             }
     	`;
     }
@@ -91,7 +94,7 @@ class PlDateTime extends PlElement {
                 </div>
 				<pl-calendar selected="[[value]]" restricted="[[restricted]]" min="[[min]]" max="[[max]]" date="[[_currentDate]]"></pl-calendar>
                 <div class="footer">
-                    <pl-button size="small" variant="secondary" label="[[_today()]]" on-click="[[onTodayClick]]"></pl-button>
+                    <pl-button size="small" variant="link" label="[[_today()]]" on-click="[[onTodayClick]]"></pl-button>
                 </div>
 			</pl-dropdown>
 		`;

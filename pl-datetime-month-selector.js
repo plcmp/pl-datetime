@@ -24,7 +24,7 @@ class PlDateTimeMonthSelector extends PlElement {
             :host{
                 display: flex;
                 flex-direction: row;    
-                gap: 8px;
+                gap: var(--space-sm);
                 text-align: center;
                 user-select: none;
 
@@ -36,12 +36,11 @@ class PlDateTimeMonthSelector extends PlElement {
 
             pl-icon{
 				cursor: pointer;
-                --pl-icon-fill-color: none;
-                --pl-icon-stroke-color: var(--grey-dark);
+                --pl-icon-fill-color: var(--grey-dark);
             }
 
             pl-icon:hover {
-                --pl-icon-stroke-color: var(--black-light);
+                --pl-icon-fill-color: var(--text-color);
 			}
     	`;
     }

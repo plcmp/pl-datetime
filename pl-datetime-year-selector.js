@@ -18,20 +18,19 @@ class PlDateTimeYearSelector extends PlElement {
         return css`
             :host{
                 display: flex;
+                gap: var(--space-sm);
                 flex-direction: row;    
-                gap: 8px; 
                 text-align: center;
                 user-select: none;
             }
 
             pl-icon{
 				cursor: pointer;
-                --pl-icon-fill-color: none;
-                --pl-icon-stroke-color: var(--grey-dark);
+                --pl-icon-fill-color: var(--grey-dark);
             }
 
             pl-icon:hover {
-                --pl-icon-stroke-color: var(--black-light);
+                --pl-icon-fill-color: var(--text-color);
 			}
     	`;
     }

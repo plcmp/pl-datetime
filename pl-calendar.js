@@ -29,38 +29,35 @@ class PlCalendar extends PlElement {
                 display: flex;
                 flex-direction: column;
                 user-select: none;
-                font: var(--font-md);
                 box-sizing: border-box;
             }
 
             .weeks {
-                margin-top: 8px;
+                margin:var(--space-sm) 0;
                 display: grid;
-                color: var(--black-lightest);
+                color: var(--text-color);
+                font: var(--text-font);
                 grid-template-columns: repeat(7, 1fr);
-                font-size: 12px;
-                line-height: 16px;
-                gap: 8px;
+                gap: var(--space-sm);
             }
 
             .weeks span {
-                width: 16px;
+                width: var(--base-size-xxs);
                 text-align: center;
             }
 
             .days {
                 display: grid;
                 grid-template-columns: repeat(7, 1fr);
-                font-size: 14px;
-                line-height: 22px;
-                color: var(--grey-dark);
+                color: var(--text-color);
+                font: var(--text-font);
                 box-sizing: border-box;
-                gap: 4px;
+                gap: var(--space-xs);
             }
 
             .days div {
-                width: 28px;
-                height: 28px;
+                width: var(--base-size-sm);
+                height: var(--base-size-sm);
                 text-align: center;
                 cursor: pointer;
                 align-items: center;
@@ -71,9 +68,9 @@ class PlCalendar extends PlElement {
             }
 
             .days div[selected], .days div:hover {
-                color: var(--white) !important;
+                color: #fff !important;
                 background: var(--primary-base);
-                border-radius: 4px;
+                border-radius: var(--border-radius);
             }
 
             .days div[current]:not([disabled]):nth-child(7n-1), .days div[current]:not([disabled]):nth-child(7n)
