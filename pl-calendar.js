@@ -134,7 +134,7 @@ class PlCalendar extends PlElement {
                 day: day,
                 formattedDay: day.format(dateFormat),
                 current: currentMonth == day.month(),
-                selected: this.selected?.setHours(0,0,0,0) == day.toDate().setHours(0,0,0,0),
+                selected: new Date(this.selected)?.setHours(0,0,0,0) == day.toDate().setHours(0,0,0,0),
                 disabled: disabled
             };
             this.push('_days', dayInfo);
