@@ -75,7 +75,7 @@ class PlDateTime extends PlElement {
                 box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.12);
                 border-radius: var(--border-radius);
                 box-sizing: border-box;
-                padding: var(--space-md);
+                padding: var(--space-md) var(--space-md) var(--space-xs) var(--space-md);
                 width: 220px;
             }
     	`;
@@ -94,14 +94,15 @@ class PlDateTime extends PlElement {
                 </div>
 				<pl-calendar selected="[[value]]" restricted="[[restricted]]" min="[[min]]" max="[[max]]" date="[[_currentDate]]"></pl-calendar>
                 <div class="footer">
-                    <pl-button size="small" variant="link" label="[[_today()]]" on-click="[[onTodayClick]]"></pl-button>
+                    <pl-button variant="link" label="[[_today()]]" on-click="[[onTodayClick]]"></pl-button>
                 </div>
 			</pl-dropdown>
 		`;
     }
 
     onTodayClick() {
-        this.value = new Date();
+        const today = new Date().setHours(0,0,0,0)
+        this.value = new Date(today);
     }
 
     _today() {
