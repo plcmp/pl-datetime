@@ -4,16 +4,23 @@ import '@plcmp/pl-input';
 import '@plcmp/pl-input-mask';
 import '@plcmp/pl-dropdown';
 import '@plcmp/pl-icon';
+import '@plcmp/pl-icon-button';
 import '@plcmp/pl-iconset-default';
 
 import './pl-datetime-month-selector.js';
 import './pl-datetime-year-selector.js';
 import './pl-calendar.js';
+import './pl-time-picker.js';
 
 import dayjs from 'dayjs/esm/index.js';
 import customParseFormat from 'dayjs/esm/plugin/customParseFormat/index.js';
 
 dayjs.extend(customParseFormat)
+
+const TYPES = {
+    date: { mask: 'DD.MM.YYYY' },
+    datetime: { mask: 'DD.MM.YYYY HH:mm'}
+}
 
 class PlDateTime extends PlElement {
     static get properties() {
@@ -28,19 +35,24 @@ class PlDateTime extends PlElement {
             hidden: { type: Boolean, reflectToAttribute: true },
             restricted: { value: () => [] },
             _formatted: { type: String, observer: '_formattedObserver' },
-            _dateMask: { type: String, value: 'DD.MM.YYYY' },
+            _hour: { type: Number, observer: '_hourChanged', value: 0 },
+            _minute: { type: Number, observer: '_minuteChanged', value: 0 },
+            _dateMask: { type: String },
             _currentDate: { type: Date, value: new Date() },
-            _blocks: { value: () => null }
+            _blocks: { value: () => null },
+            type: { type: String, value: 'date', observer: '_typeChanged', reflectToAttribute: true } // date/datetime
         };
     }
 
     static get css() {
         return css`
             :host{
-                --content-width: 120px;
+                --content-width: 140px;
                 display: flex;
             }
-
+            :host([type=datetime]){
+                --content-width: 180px;
+            }
             :host([hidden]) {
                 display: none;
             }
@@ -51,12 +63,6 @@ class PlDateTime extends PlElement {
                 gap: var(--space-sm);
                 justify-content: center;
             }
-
-            pl-calendar {
-                padding-bottom: var(--space-sm);;
-                border-bottom: 1px solid var(--grey-light);
-            }
-
             .footer pl-button {
                 width: 100%;
             }
@@ -76,7 +82,20 @@ class PlDateTime extends PlElement {
                 border-radius: var(--border-radius);
                 box-sizing: border-box;
                 padding: var(--space-md) var(--space-md) var(--space-xs) var(--space-md);
-                width: 220px;
+            }
+            .hf {
+                display: flex;
+                padding-bottom: var(--space-sm);
+                border-bottom: 1px solid var(--grey-light);
+            }
+            .pc {
+                padding-left: var(--space-sm);
+                margin-left: var(--space-sm);
+                border-left: 1px solid var(--grey-light);
+                text-align: center;
+            }
+            .pc pl-time-picker {
+              margin-top:  var(--space-sm);
             }
     	`;
     }
@@ -84,15 +103,28 @@ class PlDateTime extends PlElement {
     static get template() {
         return html`
 			<pl-input id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" variant="[[variant]]">
+				<pl-icon-button variant="link" hidden="[[!value]]" slot="suffix" iconset="pl-default" size="8" icon="close" on-click="[[_clear]]"></pl-icon-button>
 				<pl-icon slot="suffix" iconset="pl-default" size="16" icon="datetime" on-click="[[_onToggle]]"></pl-icon>
                 <pl-input-mask id="inputMask" type="date" mask="[[_dateMask]]" blocks="[[_blocks]]"></pl-input-mask>
 			</pl-input>
 			<pl-dropdown id="dd">
-                <div class="header">
-                    <pl-datetime-month-selector date="{{_currentDate}}"></pl-datetime-month-selector>
-                    <pl-datetime-year-selector date="{{_currentDate}}" min="[[min]]" max="[[max]]"></pl-datetime-year-selector>
+                <div class="hf">
+                    <div>
+                        <div class="header">
+                            <pl-datetime-month-selector date="{{_currentDate}}"></pl-datetime-month-selector>
+                            <pl-datetime-year-selector date="{{_currentDate}}" min="[[min]]" max="[[max]]"></pl-datetime-year-selector>
+                        </div>
+                        <pl-calendar selected="[[value]]" restricted="[[restricted]]" min="[[min]]" max="[[max]]" date="[[_currentDate]]"></pl-calendar>
+                    </div>
+                    <pl-dom-if if="[[_eq(type,'datetime')]]">
+                        <template>
+                        <div class="pc">
+                            <span>[[_pad2(_hour)]]:[[_pad2(_minute)]]</span>
+                            <pl-time-picker id="timepicker" value-hour="{{_hour}}" value-minute="{{_minute}}" on-done="[[timeDone]]"></pl-time-picker>
+                        </div>
+                        </template>
+                    </pl-dom-if>
                 </div>
-				<pl-calendar selected="[[value]]" restricted="[[restricted]]" min="[[min]]" max="[[max]]" date="[[_currentDate]]"></pl-calendar>
                 <div class="footer">
                     <pl-button variant="link" label="[[_today()]]" on-click="[[onTodayClick]]"></pl-button>
                 </div>
@@ -102,38 +134,60 @@ class PlDateTime extends PlElement {
 
     onTodayClick() {
         const today = new Date().setHours(0,0,0,0)
-        this.value = new Date(today);
+        //this.value = new Date(today);
+        this.$.input.value = dayjs().format(this._dateMask);
+        this._calendarDropdown.close();
     }
 
     _today() {
         const date = new Date();
-        return `Сегодня ${dayjs(date).format('DD.MM.YYYY')}`
+        return `${this.type == 'datetime' ? 'Сейчас' : 'Сегодня'}`
     }
 
     _formattedObserver(formatted) {
-        if (!this.$.inputMask._imask.masked) {
-            return;
+        this.$.inputMask._imask.updateValue();
+        this._internalSet = true;
+        if (this.$.inputMask._imask.masked && this.$.inputMask._imask.masked.isComplete) {
+            const date = dayjs(formatted, this._dateMask);
+            this.invalid = !date.isValid();
+            if (date.isValid()) {
+                if (!date.isSame(this.value)) this.value = date.toDate();
+            } else {
+                this.value = null;
+            }
+        } else {
+            this.value = null;
         }
-
-        const date = dayjs(formatted, this._dateMask);
-        this.invalid = !date.isValid();
-        if (date.isValid()) {
-            this.value = date.toDate();
-        }
+        this._internalSet = false;
     }
 
-    _valueObserver(value) {
+    _valueObserver(value,_,m) {
         if (value) {
-            this._currentDate = dayjs(value).toDate();
-            const formatted = dayjs(value).format(this._dateMask);
+            let dv = dayjs(value);
+            this._currentDate = dv.toDate();
+            const formatted = dv.format(this._dateMask);
+            //if (dv.hour() !== this._hour)
+                this._hour = +dv.format('HH');
+            //if (dv.minute() !== this._minute)
+                this._minute = +dv.format('mm');
             if (this._formatted != formatted) {
                 this._formatted = formatted;
             }
         } else {
-            this._formatted = null;
+            if (!this._internalSet)
+                this._formatted = null;
         }
     }
-
+    _minuteChanged(v,o) {
+        this._timeSelected = true;
+        if (this.value && dayjs(this.value).minute() !== +v)
+            this.value = dayjs(this.value).set('minute', v).toDate();
+    }
+    _hourChanged(v,o) {
+        this._timeSelected = true;
+        if (this.value && dayjs(this.value).hour() !== +v)
+            this.value = dayjs(this.value).set('hour', v).toDate();
+    }
     connectedCallback() {
         super.connectedCallback();
         //TODO Доработать маску при частичном удалении
@@ -142,6 +196,7 @@ class PlDateTime extends PlElement {
         this._calendarDropdown = this.$.dd;
         this.addEventListener('on-day-click', this._onDayClick);
         this.$.input.validators.push(this.validator.bind(this));
+        //TODO: move to calendar
         this._calendarDropdown.addEventListener('wheel', (ev) => {
             ev.stopPropagation();
             if (ev.wheelDelta > 0) {
@@ -150,10 +205,24 @@ class PlDateTime extends PlElement {
                 this._currentDate = dayjs(this._currentDate).add(1, 'month');
             }
         });
+        this._typeChanged(this.type);
     }
 
+    _typeChanged(t) {
+        this._dateMask = TYPES[t]?.mask ?? 'DD.MM.YYYY';
+    }
     _onToggle(event) {
-        this._calendarDropdown.open(this.$.input._inputContainer);
+        if (this._calendarDropdown.opened) {
+            this._calendarDropdown.close();
+        } else {
+            if (this.type === 'datetime') {
+                this.$.timepicker.mode = 'hours';
+                this._timeSelected = false;
+                this._daySelected = false;
+                this._PrevDaySelected = null;
+            }
+            this._calendarDropdown.open(this.$.input._inputContainer);
+        }
     }
 
     validator(value) {
@@ -161,12 +230,14 @@ class PlDateTime extends PlElement {
         if (!this.value) {
             return;
         }
-
-        if (this.min && this.value.setHours(0, 0, 0, 0) < this.min.setHours(0, 0, 0, 0)) {
+        let dateMode = this.type === 'date';
+        let v = dayjs(this.value);
+        if (dateMode) v = v.startOf('day');
+        if (this.min && v.isBefore( dateMode ? dayjs(this.min).startOf('day') : this.min)) {
             messages.push(`The selected date cannot be less than the minimum: ${dayjs(this.min).format('DD.MM.YYYY')}`);
         }
 
-        if (this.max && this.value.setHours(0, 0, 0, 0) > this.max.setHours(0, 0, 0, 0)) {
+        if (this.max && v.isAfter( dateMode ? dayjs(this.max).startOf('day') : this.max)) {
             messages.push(`The selected date cannot be greater than the maximum: ${dayjs(this.max).format('DD.MM.YYYY')}`);
         }
 
@@ -174,9 +245,27 @@ class PlDateTime extends PlElement {
     }
 
     _onDayClick(event) {
-        event.stopPropagation()
-        this.value = event.detail.day.toDate();
-        this._calendarDropdown.close();
+        event.stopPropagation();
+        this._daySelected = true;
+        let day = dayjs(event.detail.day).hour(+(this._hour??0)).minute(+(this._minute??0));
+        this.$.input.value = day.format(this._dateMask);
+        if (this.type === 'date' || this._timeSelected || event.detail.day.isSame(this._PrevDaySelected) )
+            this._calendarDropdown.close();
+
+        this._PrevDaySelected = event.detail.day;
+    }
+    timeDone() {
+        if (this._daySelected) this._calendarDropdown.close();
+    }
+    _eq(a,b) {
+        return a === b;
+    }
+    _pad2(x) {
+        return (x ?? 0).toString().padStart(2,'0');
+    }
+    _clear() {
+        this.$.inputMask._imask.updateValue();
+        this._formatted = '';
     }
 }
 

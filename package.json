@@ -1,6 +1,6 @@
 {
     "name": "@plcmp/pl-datetime",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "Simple input with date selector.",
     "main": "pl-datetime.js",
     "repository": {
@@ -23,7 +23,7 @@
         }
     ],
     "dependencies": {
-        "polylib": "^1.0.0",
+        "polylib": "^1.1.0",
         "dayjs": "^1.10.7",
         "@plcmp/pl-dropdown": "^0.1.0",
         "@plcmp/pl-icon": "^0.1.0",
