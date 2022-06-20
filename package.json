@@ -29,7 +29,7 @@
         "@plcmp/pl-icon": "^0.1.0",
         "@plcmp/pl-iconset-default": "^0.1.0",
         "@plcmp/pl-input": "^0.1.0",
-        "@plcmp/pl-input-mask": "^0.1.0",
+        "@plcmp/pl-input-mask": "^0.1.2",
         "@plcmp/pl-repeat": "^0.1.0"
     }
 }
