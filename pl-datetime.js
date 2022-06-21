@@ -125,7 +125,7 @@ class PlDateTime extends PlElement {
                                 <template>
                                 <div class="pc">
                                     <span>[[_pad2(_hour)]]:[[_pad2(_minute)]]</span>
-                                    <pl-time-picker value-hour="{{_hour}}" value-minute="{{_minute}}" on-done="[[timeDone]]" mode="[[_timepickerMode]]"></pl-time-picker>
+                                    <pl-time-picker value-hour="{{_hour}}" value-minute="{{_minute}}" on-done="[[timeDone]]" mode="{{_timepickerMode}}"></pl-time-picker>
                                 </div>
                                 </template>
                             </pl-dom-if>
@@ -224,7 +224,7 @@ class PlDateTime extends PlElement {
         } else {
             this._ddOpened = true;
             if (this.type === 'datetime') {
-                this.timepickerMode = 'hours';
+                this._timepickerMode = 'hours';
                 this._timeSelected = false;
                 this._daySelected = false;
                 this._PrevDaySelected = null;
