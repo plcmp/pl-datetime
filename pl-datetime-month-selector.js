@@ -37,6 +37,8 @@ class PlDateTimeMonthSelector extends PlElement {
             pl-icon{
 				cursor: pointer;
                 --pl-icon-fill-color: var(--grey-dark);
+                height: 16px;
+                width: 16px;
             }
 
             pl-icon:hover {

@@ -41,6 +41,8 @@ class PlDateTime extends PlElement {
             _dateMask: { type: String },
             _currentDate: { type: Date, value: new Date() },
             _blocks: { value: () => null },
+            _timepickerMode: { type: String },
+            _ddOpened: { type: Boolean },
             type: { type: String, value: 'date', observer: '_typeChanged', reflectToAttribute: true } // date/datetime
         };
     }
@@ -109,26 +111,30 @@ class PlDateTime extends PlElement {
                 <pl-input-mask id="inputMask" type="date" mask="[[_dateMask]]" blocks="[[_blocks]]"></pl-input-mask>
 			</pl-input>
 			<pl-dropdown id="dd">
-                <div class="hf">
-                    <div>
-                        <div class="header">
-                            <pl-datetime-month-selector date="{{_currentDate}}"></pl-datetime-month-selector>
-                            <pl-datetime-year-selector date="{{_currentDate}}" min="[[min]]" max="[[max]]"></pl-datetime-year-selector>
+                <pl-dom-if if="[[_ddOpened]]">
+                    <template>
+                        <div class="hf">
+                            <div>
+                                <div class="header">
+                                    <pl-datetime-month-selector date="{{_currentDate}}"></pl-datetime-month-selector>
+                                    <pl-datetime-year-selector date="{{_currentDate}}" min="[[min]]" max="[[max]]"></pl-datetime-year-selector>
+                                </div>
+                                <pl-calendar selected="[[value]]" restricted="[[restricted]]" min="[[min]]" max="[[max]]" date="[[_currentDate]]"></pl-calendar>
+                            </div>
+                            <pl-dom-if if="[[_eq(type,'datetime')]]">
+                                <template>
+                                <div class="pc">
+                                    <span>[[_pad2(_hour)]]:[[_pad2(_minute)]]</span>
+                                    <pl-time-picker value-hour="{{_hour}}" value-minute="{{_minute}}" on-done="[[timeDone]]" mode="[[_timepickerMode]]"></pl-time-picker>
+                                </div>
+                                </template>
+                            </pl-dom-if>
+                        </pl-dom-if>
                         </div>
-                        <pl-calendar selected="[[value]]" restricted="[[restricted]]" min="[[min]]" max="[[max]]" date="[[_currentDate]]"></pl-calendar>
-                    </div>
-                    <pl-dom-if if="[[_eq(type,'datetime')]]">
-                        <template>
-                        <div class="pc">
-                            <span>[[_pad2(_hour)]]:[[_pad2(_minute)]]</span>
-                            <pl-time-picker id="timepicker" value-hour="{{_hour}}" value-minute="{{_minute}}" on-done="[[timeDone]]"></pl-time-picker>
+                        <div class="footer">
+                            <pl-button variant="link" label="[[_today()]]" on-click="[[onTodayClick]]"></pl-button>
                         </div>
-                        </template>
-                    </pl-dom-if>
-                </div>
-                <div class="footer">
-                    <pl-button variant="link" label="[[_today()]]" on-click="[[onTodayClick]]"></pl-button>
-                </div>
+                    </template>
 			</pl-dropdown>
 		`;
     }
@@ -216,13 +222,15 @@ class PlDateTime extends PlElement {
         if (this._calendarDropdown.opened) {
             this._calendarDropdown.close();
         } else {
+            this._ddOpened = true;
             if (this.type === 'datetime') {
-                this.$.timepicker.mode = 'hours';
+                this.timepickerMode = 'hours';
                 this._timeSelected = false;
                 this._daySelected = false;
                 this._PrevDaySelected = null;
             }
-            this._calendarDropdown.open(this.$.input._inputContainer);
+            // delay dropdown open to let content render fully (dom if template stamp)
+            setTimeout( () => this._calendarDropdown.open(this.$.input._inputContainer),0);
         }
     }
 
