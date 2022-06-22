@@ -33,6 +33,7 @@ class PlDateTime extends PlElement {
             min: { value: () => null },
             max: { value: () => null },
             hidden: { type: Boolean, reflectToAttribute: true },
+            disabled: { type: Boolean, reflectToAttribute: true },
             restricted: { value: () => [] },
             _formatted: { type: String, observer: '_formattedObserver' },
             _hour: { type: Number, observer: '_hourChanged', value: 0 },
@@ -102,7 +103,7 @@ class PlDateTime extends PlElement {
 
     static get template() {
         return html`
-			<pl-input id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" variant="[[variant]]">
+			<pl-input id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" variant="[[variant]]" disabled="[[disabled]]">
 				<pl-icon-button variant="link" hidden="[[!value]]" slot="suffix" iconset="pl-default" size="8" icon="close" on-click="[[_clear]]"></pl-icon-button>
 				<pl-icon slot="suffix" iconset="pl-default" size="16" icon="datetime" on-click="[[_onToggle]]"></pl-icon>
                 <pl-input-mask id="inputMask" type="date" mask="[[_dateMask]]" blocks="[[_blocks]]"></pl-input-mask>
