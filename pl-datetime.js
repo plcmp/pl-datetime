@@ -40,7 +40,6 @@ class PlDateTime extends PlElement {
             _minute: { type: Number, observer: '_minuteChanged', value: 0 },
             _dateMask: { type: String },
             _currentDate: { type: Date, value: new Date() },
-            _blocks: { value: () => null },
             _timepickerMode: { type: String },
             _ddOpened: { type: Boolean },
             type: { type: String, value: 'date', observer: '_typeChanged', reflectToAttribute: true } // date/datetime
@@ -108,7 +107,7 @@ class PlDateTime extends PlElement {
 			<pl-input id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" variant="[[variant]]" disabled="[[disabled]]">
 				<pl-icon-button variant="link" hidden="[[!value]]" slot="suffix" iconset="pl-default" size="8" icon="close" on-click="[[_clear]]"></pl-icon-button>
 				<pl-icon slot="suffix" iconset="pl-default" size="16" icon="datetime" on-click="[[_onToggle]]"></pl-icon>
-                <pl-input-mask id="inputMask" type="date" mask="[[_dateMask]]" blocks="[[_blocks]]"></pl-input-mask>
+                <pl-input-mask id="inputMask" type="date" mask="[[_dateMask]]"></pl-input-mask>
 			</pl-input>
 			<pl-dropdown id="dd">
                 <pl-dom-if if="[[_ddOpened]]">
