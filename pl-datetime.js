@@ -30,6 +30,7 @@ class PlDateTime extends PlElement {
             required: { type: Boolean },
             invalid: { type: Boolean },
             variant: { type: String },
+            orientation: { type: String },
             min: { value: () => null },
             max: { value: () => null },
             hidden: { type: Boolean, reflectToAttribute: true },
@@ -48,15 +49,19 @@ class PlDateTime extends PlElement {
 
     static get css() {
         return css`
-            :host{
-                --content-width: 140px;
-                display: flex;
+            :host {
+                display: inline-block;
             }
-            :host([type=datetime]){
-                --content-width: 180px;
-            }
+
             :host([hidden]) {
                 display: none;
+            }
+
+            :host([type=date]){
+                --content-width: 145px;
+            }
+            :host([type=datetime]){
+                --content-width: 185px;
             }
 
             .header, .footer {
@@ -68,15 +73,6 @@ class PlDateTime extends PlElement {
             .footer pl-button {
                 width: 100%;
             }
-
-			pl-icon {
-				cursor: pointer;
-                --pl-icon-fill-color: var(--grey-dark);
-			}
-
-			pl-icon:hover {
-                --pl-icon-fill-color: var(--text-color);
-			}
 
             pl-dropdown {
                 background: var(--surface-color);
@@ -104,9 +100,11 @@ class PlDateTime extends PlElement {
 
     static get template() {
         return html`
-			<pl-input id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" variant="[[variant]]" disabled="[[disabled]]">
-				<pl-icon-button variant="link" hidden="[[!value]]" slot="suffix" iconset="pl-default" size="8" icon="close" on-click="[[_clear]]"></pl-icon-button>
-				<pl-icon slot="suffix" iconset="pl-default" size="16" icon="datetime" on-click="[[_onToggle]]"></pl-icon>
+			<pl-input id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" orientation="[[orientation]]" disabled="[[disabled]]">
+                <slot name="prefix" slot="prefix"></slot>
+                <slot name="suffix" slot="suffix"></slot>
+                <pl-icon-button variant="link" hidden="[[!value]]" slot="suffix" iconset="pl-default" size="12" icon="close" on-click="[[_clear]]"></pl-icon-button>
+				<pl-icon-button variant="link" slot="suffix" iconset="pl-default" size="16" icon="[[_getIcon(type)]]" on-click="[[_onToggle]]"></pl-icon-button>
                 <pl-input-mask id="inputMask" type="date" mask="[[_dateMask]]"></pl-input-mask>
 			</pl-input>
 			<pl-dropdown id="dd">
@@ -136,6 +134,10 @@ class PlDateTime extends PlElement {
                     </template>
 			</pl-dropdown>
 		`;
+    }
+
+    _getIcon(type) {
+        return type;
     }
 
     onTodayClick() {
@@ -212,6 +214,11 @@ class PlDateTime extends PlElement {
             }
         });
         this._typeChanged(this.type);
+
+        if(this.variant) {
+            console.log('Variant is deprecated, use orientation instead');
+            this.orientation = this.variant;
+        }
     }
 
     _typeChanged(t) {
