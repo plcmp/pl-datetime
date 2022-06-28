@@ -153,7 +153,7 @@ class PlDateTime extends PlElement {
     }
 
     _formattedObserver(formatted) {
-        this.$.inputMask._imask.updateValue();
+        this.$.inputMask._imask.value = formatted;
         this._internalSet = true;
         if (this.$.inputMask._imask.masked && this.$.inputMask._imask.masked.isComplete) {
             const date = dayjs(formatted, this._dateMask);
