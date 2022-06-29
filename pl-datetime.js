@@ -183,7 +183,7 @@ class PlDateTime extends PlElement {
             }
         } else {
             if (!this._internalSet)
-                this._formatted = null;
+                this._formatted = '';
         }
     }
     _minuteChanged(v,o) {
