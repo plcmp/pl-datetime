@@ -43,7 +43,8 @@ class PlDateTime extends PlElement {
             _currentDate: { type: Date, value: new Date() },
             _timepickerMode: { type: String },
             _ddOpened: { type: Boolean },
-            type: { type: String, value: 'date', observer: '_typeChanged', reflectToAttribute: true } // date/datetime
+            type: { type: String, value: 'date', observer: '_typeChanged', reflectToAttribute: true } ,// date/datetime
+            readonly: { type: Boolean }
         };
     }
 
@@ -100,11 +101,11 @@ class PlDateTime extends PlElement {
 
     static get template() {
         return html`
-			<pl-input id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" orientation="[[orientation]]" disabled="[[disabled]]">
+			<pl-input readonly="[[readonly]]" id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" orientation="[[orientation]]" disabled="[[disabled]]">
                 <slot name="prefix" slot="prefix"></slot>
                 <slot name="suffix" slot="suffix"></slot>
-                <pl-icon-button variant="link" hidden="[[!value]]" slot="suffix" iconset="pl-default" size="12" icon="close" on-click="[[_clear]]"></pl-icon-button>
-				<pl-icon-button variant="link" slot="suffix" iconset="pl-default" size="16" icon="[[_getIcon(type)]]" on-click="[[_onToggle]]"></pl-icon-button>
+                <pl-icon-button variant="link" hidden="[[isClearHidden(readonly, value)]]" slot="suffix" iconset="pl-default" size="12" icon="close" on-click="[[_clear]]"></pl-icon-button>
+				<pl-icon-button variant="link" hidden="[[readonly]]" slot="suffix" iconset="pl-default" size="16" icon="[[_getIcon(type)]]" on-click="[[_onToggle]]"></pl-icon-button>
                 <pl-input-mask id="inputMask" type="date" mask="[[_dateMask]]"></pl-input-mask>
 			</pl-input>
 			<pl-dropdown id="dd">
@@ -138,6 +139,10 @@ class PlDateTime extends PlElement {
 
     _getIcon(type) {
         return type;
+    }
+
+    isClearHidden(){
+        return this.readonly || !this.value;
     }
 
     onTodayClick() {
