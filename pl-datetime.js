@@ -205,7 +205,6 @@ class PlDateTime extends PlElement {
         super.connectedCallback();
         //TODO Доработать маску при частичном удалении
 
-        this._nativeInput = this.$.input._nativeInput;
         this._calendarDropdown = this.$.dd;
         this.addEventListener('on-day-click', this._onDayClick);
         this.$.input.validators.push(this.validator.bind(this));
