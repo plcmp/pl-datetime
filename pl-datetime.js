@@ -23,119 +23,113 @@ const TYPES = {
 }
 
 class PlDateTime extends PlElement {
-    static get properties() {
-        return {
-            value: { observer: '_valueObserver' },
-            label: { type: String },
-            required: { type: Boolean },
-            invalid: { type: Boolean },
-            variant: { type: String },
-            orientation: { type: String },
-            min: { value: () => null },
-            max: { value: () => null },
-            hidden: { type: Boolean, reflectToAttribute: true },
-            disabled: { type: Boolean, reflectToAttribute: true },
-            restricted: { value: () => [] },
-            _formatted: { type: String, observer: '_formattedObserver' },
-            _hour: { type: Number, observer: '_hourChanged', value: 0 },
-            _minute: { type: Number, observer: '_minuteChanged', value: 0 },
-            _dateMask: { type: String },
-            _currentDate: { type: Date, value: new Date() },
-            _timepickerMode: { type: String },
-            _ddOpened: { type: Boolean },
-            type: { type: String, value: 'date', observer: '_typeChanged', reflectToAttribute: true } ,// date/datetime
-            readonly: { type: Boolean }
-        };
+    static  properties = {
+        value: { observer: '_valueObserver' },
+        label: { type: String },
+        required: { type: Boolean },
+        invalid: { type: Boolean },
+        variant: { type: String },
+        orientation: { type: String },
+        min: { value: () => null },
+        max: { value: () => null },
+        hidden: { type: Boolean, reflectToAttribute: true },
+        disabled: { type: Boolean, reflectToAttribute: true },
+        restricted: { value: () => [] },
+        _formatted: { type: String, observer: '_formattedObserver' },
+        _hour: { type: Number, observer: '_hourChanged', value: 0 },
+        _minute: { type: Number, observer: '_minuteChanged', value: 0 },
+        _dateMask: { type: String },
+        _currentDate: { type: Date, value: new Date() },
+        _timepickerMode: { type: String },
+        _ddOpened: { type: Boolean },
+        type: { type: String, value: 'date', observer: '_typeChanged', reflectToAttribute: true } ,// date/datetime
+        readonly: { type: Boolean }
     }
 
-    static get css() {
-        return css`
-            :host {
-                display: inline-block;
-            }
+    static css = css`
+        :host {
+            display: inline-block;
+        }
 
-            :host([hidden]) {
-                display: none;
-            }
+        :host([hidden]) {
+            display: none;
+        }
 
-            :host([type=date]){
-                --content-width: 145px;
-            }
-            :host([type=datetime]){
-                --content-width: 185px;
-            }
+        :host([type=date]){
+            --content-width: 145px;
+        }
+        :host([type=datetime]){
+            --content-width: 185px;
+        }
 
-            .header, .footer {
-                display: flex;
-                flex-direction: row;
-                gap: var(--space-sm);
-                justify-content: center;
-            }
-            .footer pl-button {
-                width: 100%;
-            }
+        .header, .footer {
+            display: flex;
+            flex-direction: row;
+            gap: var(--space-sm);
+            justify-content: center;
+        }
+        .footer pl-button {
+            width: 100%;
+        }
 
-            pl-dropdown {
-                background: var(--surface-color);
-                box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.12);
-                border-radius: var(--border-radius);
-                box-sizing: border-box;
-                padding: var(--space-md) var(--space-md) var(--space-xs) var(--space-md);
-            }
-            .hf {
-                display: flex;
-                padding-bottom: var(--space-sm);
-                border-bottom: 1px solid var(--grey-light);
-            }
-            .pc {
-                padding-left: var(--space-sm);
-                margin-left: var(--space-sm);
-                border-left: 1px solid var(--grey-light);
-                text-align: center;
-            }
-            .pc pl-time-picker {
-              margin-top:  var(--space-sm);
-            }
-    	`;
-    }
+        pl-dropdown {
+            background: var(--surface-color);
+            box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.12);
+            border-radius: var(--border-radius);
+            box-sizing: border-box;
+            padding: var(--space-md) var(--space-md) var(--space-xs) var(--space-md);
+        }
+        .hf {
+            display: flex;
+            padding-bottom: var(--space-sm);
+            border-bottom: 1px solid var(--grey-light);
+        }
+        .pc {
+            padding-left: var(--space-sm);
+            margin-left: var(--space-sm);
+            border-left: 1px solid var(--grey-light);
+            text-align: center;
+        }
+        .pc pl-time-picker {
+            margin-top:  var(--space-sm);
+        }
+    `;
 
-    static get template() {
-        return html`
-			<pl-input readonly="[[readonly]]" id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" orientation="[[orientation]]" disabled="[[disabled]]">
-                <slot name="prefix" slot="prefix"></slot>
-                <slot name="suffix" slot="suffix"></slot>
-                <pl-icon-button variant="link" hidden="[[isClearHidden(readonly, value)]]" slot="suffix" iconset="pl-default" size="12" icon="close" on-click="[[_clear]]"></pl-icon-button>
-				<pl-icon-button variant="link" hidden="[[readonly]]" slot="suffix" iconset="pl-default" size="16" icon="[[_getIcon(type)]]" on-click="[[_onToggle]]"></pl-icon-button>
-                <pl-input-mask id="inputMask" type="date" mask="[[_dateMask]]"></pl-input-mask>
-			</pl-input>
-			<pl-dropdown id="dd">
-                <pl-dom-if if="[[_ddOpened]]">
-                    <template>
-                        <div class="hf">
-                            <div>
-                                <div class="header">
-                                    <pl-datetime-month-selector date="{{_currentDate}}"></pl-datetime-month-selector>
-                                    <pl-datetime-year-selector date="{{_currentDate}}" min="[[min]]" max="[[max]]"></pl-datetime-year-selector>
-                                </div>
-                                <pl-calendar selected="[[value]]" restricted="[[restricted]]" min="[[min]]" max="[[max]]" date="[[_currentDate]]"></pl-calendar>
+    static  template = html`
+        <pl-input readonly="[[readonly]]" id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" orientation="[[orientation]]" disabled="[[disabled]]">
+            <slot name="prefix" slot="prefix"></slot>
+            <slot name="suffix" slot="suffix"></slot>
+            <pl-icon-button variant="link" hidden="[[isClearHidden(readonly, value)]]" slot="suffix" iconset="pl-default" size="12" icon="close" on-click="[[_clear]]"></pl-icon-button>
+            <pl-icon-button variant="link" hidden="[[readonly]]" slot="suffix" iconset="pl-default" size="16" icon="[[_getIcon(type)]]" on-click="[[_onToggle]]"></pl-icon-button>
+            <pl-input-mask id="inputMask" type="date" mask="[[_dateMask]]"></pl-input-mask>
+        </pl-input>
+        <pl-dropdown id="dd">
+            <pl-dom-if if="[[_ddOpened]]">
+                <template>
+                    <div class="hf">
+                        <div>
+                            <div class="header">
+                                <pl-datetime-month-selector date="{{_currentDate}}"></pl-datetime-month-selector>
+                                <pl-datetime-year-selector date="{{_currentDate}}" min="[[min]]" max="[[max]]"></pl-datetime-year-selector>
                             </div>
-                            <pl-dom-if if="[[_eq(type,'datetime')]]">
-                                <template>
-                                <div class="pc">
-                                    <span>[[_pad2(_hour)]]:[[_pad2(_minute)]]</span>
-                                    <pl-time-picker value-hour="{{_hour}}" value-minute="{{_minute}}" on-done="[[timeDone]]" mode="{{_timepickerMode}}"></pl-time-picker>
-                                </div>
-                                </template>
-                            </pl-dom-if>
+                            <pl-calendar selected="[[value]]" restricted="[[restricted]]" min="[[min]]" max="[[max]]" date="[[_currentDate]]"></pl-calendar>
+                        </div>
+                        <pl-dom-if if="[[_eq(type,'datetime')]]">
+                            <template>
+                            <div class="pc">
+                                <span>[[_pad2(_hour)]]:[[_pad2(_minute)]]</span>
+                                <pl-time-picker value-hour="{{_hour}}" value-minute="{{_minute}}" on-done="[[timeDone]]" mode="{{_timepickerMode}}"></pl-time-picker>
+                            </div>
+                            </template>
                         </pl-dom-if>
-                        </div>
-                        <div class="footer">
-                            <pl-button variant="link" label="[[_today()]]" on-click="[[onTodayClick]]"></pl-button>
-                        </div>
-                    </template>
-			</pl-dropdown>
-		`;
-    }
+                    </pl-dom-if>
+                    </div>
+                    <div class="footer">
+                        <pl-button variant="link" label="[[_today()]]" on-click="[[onTodayClick]]"></pl-button>
+                    </div>
+                </template>
+        </pl-dropdown>
+    `;
 
     _getIcon(type) {
         return type;
@@ -147,13 +141,11 @@ class PlDateTime extends PlElement {
 
     onTodayClick() {
         const today = new Date().setHours(0,0,0,0)
-        //this.value = new Date(today);
         this.$.input.value = dayjs().format(this._dateMask);
         this._calendarDropdown.close();
     }
 
     _today() {
-        const date = new Date();
         return `${this.type == 'datetime' ? 'Сейчас' : 'Сегодня'}`
     }
 
@@ -240,7 +232,7 @@ class PlDateTime extends PlElement {
                 this._PrevDaySelected = null;
             }
             // delay dropdown open to let content render fully (dom if template stamp)
-            setTimeout( () => this._calendarDropdown.open(this.$.input._inputContainer),0);
+            setTimeout( () => this._calendarDropdown.open(this.$.input.$.inputContainer),0);
         }
     }
 

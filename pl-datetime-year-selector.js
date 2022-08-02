@@ -6,44 +6,38 @@ import '@plcmp/pl-iconset-default';
 import dayjs from 'dayjs/esm/index.js';
 
 class PlDateTimeYearSelector extends PlElement {
-    static get properties() {
-        return {
-            min: { type: Date, value: () => null },
-            max: { type: Date, value: () => null },
-            date: {type: Date, value: () => new Date()}
-        };
-    }
+    static properties = {
+        min: { type: Date, value: () => null },
+        max: { type: Date, value: () => null },
+        date: {type: Date, value: () => new Date()}
+    };
 
-    static get css() {
-        return css`
-            :host{
-                display: flex;
-                gap: var(--space-sm);
-                flex-direction: row;    
-                text-align: center;
-                user-select: none;
-            }
+    static css = css`
+        :host{
+            display: flex;
+            gap: var(--space-sm);
+            flex-direction: row;    
+            text-align: center;
+            user-select: none;
+        }
 
-            pl-icon{
-				cursor: pointer;
-                --pl-icon-fill-color: var(--grey-dark);
-                height: 16px;
-                width: 16px;
-            }
+        pl-icon{
+            cursor: pointer;
+            --pl-icon-fill-color: var(--grey-dark);
+            height: 16px;
+            width: 16px;
+        }
 
-            pl-icon:hover {
-                --pl-icon-fill-color: var(--text-color);
-			}
-    	`;
-    }
+        pl-icon:hover {
+            --pl-icon-fill-color: var(--text-color);
+        }
+    `;
 
-    static get template() {
-        return html`
-            <pl-icon icon="chevron-left" iconset="pl-default" on-click="[[_prevYear]]"></pl-icon>
-            <span>[[_format(date)]]</span>
-            <pl-icon icon="chevron-right" iconset="pl-default" on-click="[[_nextYear]]"></pl-icon>
-        `;
-    }
+    static template = html`
+        <pl-icon icon="chevron-left" iconset="pl-default" on-click="[[_prevYear]]"></pl-icon>
+        <span>[[_format(date)]]</span>
+        <pl-icon icon="chevron-right" iconset="pl-default" on-click="[[_nextYear]]"></pl-icon>
+    `;
 
     _format(date) {
         let dateVal = date || new Date();

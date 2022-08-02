@@ -9,114 +9,108 @@ dayjs.extend(isoWeek)
 dayjs.extend(isSameOrBefore)
 
 class PlCalendar extends PlElement {
-    static get properties() {
-        return {
-            selected: { value: () => null, observer: '_dateObserver' },
-            date: { value: () => new Date(), observer: '_dateObserver' },
-            min: { value: () => null, observer: '_dateObserver' },
-            max: { value: () => null, observer: '_dateObserver' },
-            restricted: { value: () => ([]), observer: '_dateObserver' },
-            //TODO реализовать точки
-            marked: { value: () => [], observer: '_dateObserver' },
-            _weekDays: { value: () => ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'] },
-            _days: { value: () => [] }
+    static properties = {
+        selected: { value: () => null, observer: '_dateObserver' },
+        date: { value: () => new Date(), observer: '_dateObserver' },
+        min: { value: () => null, observer: '_dateObserver' },
+        max: { value: () => null, observer: '_dateObserver' },
+        restricted: { value: () => ([]), observer: '_dateObserver' },
+        //TODO реализовать точки
+        marked: { value: () => [], observer: '_dateObserver' },
+        _weekDays: { value: () => ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'] },
+        _days: { value: () => [] }
+    }
+
+    static css = css`
+        :host {
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            box-sizing: border-box;
         }
-    }
 
-    static get css() {
-        return css`
-            :host {
-                display: flex;
-                flex-direction: column;
-                user-select: none;
-                box-sizing: border-box;
-            }
+        .weeks {
+            margin:var(--space-sm) 0;
+            display: grid;
+            color: var(--text-color);
+            font: var(--text-font);
+            grid-template-columns: repeat(7, 1fr);
+            gap: var(--space-sm);
+        }
 
-            .weeks {
-                margin:var(--space-sm) 0;
-                display: grid;
-                color: var(--text-color);
-                font: var(--text-font);
-                grid-template-columns: repeat(7, 1fr);
-                gap: var(--space-sm);
-            }
+        .weeks span {
+            width: var(--base-size-xxs);
+            text-align: center;
+        }
 
-            .weeks span {
-                width: var(--base-size-xxs);
-                text-align: center;
-            }
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            color: var(--text-color);
+            font: var(--text-font);
+            box-sizing: border-box;
+            gap: var(--space-xs);
+        }
 
-            .days {
-                display: grid;
-                grid-template-columns: repeat(7, 1fr);
-                color: var(--text-color);
-                font: var(--text-font);
-                box-sizing: border-box;
-                gap: var(--space-xs);
-            }
+        .days div {
+            width: var(--base-size-sm);
+            height: var(--base-size-sm);
+            text-align: center;
+            cursor: pointer;
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            color: var(--grey-dark);
+            visibility: hidden;
+        }
 
-            .days div {
-                width: var(--base-size-sm);
-                height: var(--base-size-sm);
-                text-align: center;
-                cursor: pointer;
-                align-items: center;
-                display: flex;
-                justify-content: center;
-                color: var(--grey-dark);
-                visibility: hidden;
-            }
+        .days div[selected], .days div:hover {
+            color: #fff !important;
+            background: var(--primary-base);
+            border-radius: var(--border-radius);
+        }
 
-            .days div[selected], .days div:hover {
-                color: #fff !important;
-                background: var(--primary-base);
-                border-radius: var(--border-radius);
-            }
+        .days div[current]:not([disabled]):nth-child(7n-1), .days div[current]:not([disabled]):nth-child(7n)
+        {
+            color: var(--negative-base);
+        }
 
-            .days div[current]:not([disabled]):nth-child(7n-1), .days div[current]:not([disabled]):nth-child(7n)
-            {
-                color: var(--negative-base);
-            }
+        .weeks span:nth-child(7n-1), .weeks span:nth-child(7n)
+        {
+            color: var(--negative-base);
+        }
+        
+        .days div[current] {
+            color: var(--black-base);
+            visibility: visible;
+        }
 
-            .weeks span:nth-child(7n-1), .weeks span:nth-child(7n)
-            {
-                color: var(--negative-base);
-            }
-            
-            .days div[current] {
-                color: var(--black-base);
-                visibility: visible;
-            }
+        .days div[disabled] {
+            color: var(--grey-light);
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    `;
 
-            .days div[disabled] {
-                color: var(--grey-light);
-                cursor: not-allowed;
-                pointer-events: none;
-            }
-        `
-    }
-
-    static get template() {
-        return html`
-           <div class="weeks">
-                <pl-repeat items="[[_weekDays]]">
-                    <template>
-                        <span>[[item]]</span>
-                    </template>
-                </pl-repeat>
-            </div>
-            <div class="days">
-                <pl-repeat items="[[_days]]">
-                    <template>
-                        <div on-click="[[onDayClick]]" selected$="[[item.selected]]" current$="[[item.current]]" disabled$="[[item.disabled]]">
-                            [[item.formattedDay]]
-                        </div>
-                    </template>
-                </pl-repeat>
-            </div>
-        `;
-    }
-
+    static template = html`
+        <div class="weeks">
+            <pl-repeat items="[[_weekDays]]">
+                <template>
+                    <span>[[item]]</span>
+                </template>
+            </pl-repeat>
+        </div>
+        <div class="days">
+            <pl-repeat items="[[_days]]">
+                <template>
+                    <div on-click="[[onDayClick]]" selected$="[[item.selected]]" current$="[[item.current]]" disabled$="[[item.disabled]]">
+                        [[item.formattedDay]]
+                    </div>
+                </template>
+            </pl-repeat>
+        </div>
+    `;
+    
     _dateObserver(_dateVal) {
         this.splice('_days', 0, this._days.length);
         const date = dayjs(this.date).toDate();

@@ -155,8 +155,6 @@ class PlTimePicker extends PlElement {
         </pl-dom-if>
     </div>`;
 
-    con
-
     _isSelected(display, value) {
         return display === value;
     }
