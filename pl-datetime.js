@@ -30,8 +30,10 @@ class PlDateTime extends PlElement {
         invalid: { type: Boolean },
         variant: { type: String },
         orientation: { type: String },
-        min: { value: () => null },
-        max: { value: () => null },
+        contentWidth: { type: Number },
+        labelWidth: { type: Number },
+        min: { value: () => null, observer: '_minObserver' },
+        max: { value: () => null, observer: '_maxObserver' },
         hidden: { type: Boolean, reflectToAttribute: true },
         disabled: { type: Boolean, reflectToAttribute: true },
         restricted: { value: () => [] },
@@ -96,7 +98,7 @@ class PlDateTime extends PlElement {
     `;
 
     static  template = html`
-        <pl-input readonly="[[readonly]]" id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" orientation="[[orientation]]" disabled="[[disabled]]">
+        <pl-input content-width="[[contentWidth]]" label-width="[[labelWidth]]" readonly="[[readonly]]" id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" orientation="[[orientation]]" disabled="[[disabled]]">
             <slot name="prefix" slot="prefix"></slot>
             <slot name="suffix" slot="suffix"></slot>
             <pl-icon-button variant="link" hidden="[[isClearHidden(readonly, value)]]" slot="suffix" iconset="pl-default" size="12" icon="close" on-click="[[_clear]]"></pl-icon-button>
@@ -131,6 +133,14 @@ class PlDateTime extends PlElement {
         </pl-dropdown>
     `;
 
+    _minObserver() {
+        this.$.input.validate();
+    }
+
+    _maxObserver() {
+        this.$.input.validate();
+    }
+
     _getIcon(type) {
         return type;
     }
@@ -140,7 +150,6 @@ class PlDateTime extends PlElement {
     }
 
     onTodayClick() {
-        const today = new Date().setHours(0,0,0,0)
         this.$.input.value = dayjs().format(this._dateMask);
         this._calendarDropdown.close();
     }
