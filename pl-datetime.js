@@ -28,7 +28,6 @@ class PlDateTime extends PlElement {
         label: { type: String },
         required: { type: Boolean },
         invalid: { type: Boolean },
-        variant: { type: String },
         orientation: { type: String },
         contentWidth: { type: Number },
         labelWidth: { type: Number },
@@ -219,11 +218,6 @@ class PlDateTime extends PlElement {
             }
         });
         this._typeChanged(this.type);
-
-        if(this.variant) {
-            console.log('Variant is deprecated, use orientation instead');
-            this.orientation = this.variant;
-        }
     }
 
     _typeChanged(t) {
