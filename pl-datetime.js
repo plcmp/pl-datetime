@@ -73,6 +73,10 @@ class PlDateTime extends PlElement {
             width: 100%;
         }
 
+        :host([disabled]) pl-icon-button {
+            pointer-events: none;
+        }
+
         pl-dropdown {
             background: var(--surface-color);
             box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.12);
