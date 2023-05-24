@@ -231,15 +231,14 @@ class PlDateTime extends PlElement {
         if (this._calendarDropdown.opened) {
             this._calendarDropdown.close();
         } else {
-            this._ddOpened = true;
             if (this.type === 'datetime') {
                 this._timepickerMode = 'hours';
                 this._timeSelected = false;
                 this._daySelected = false;
                 this._PrevDaySelected = null;
             }
-            // delay dropdown open to let content render fully (dom if template stamp)
-            setTimeout( () => this._calendarDropdown.open(this.$.input.$.inputContainer),0);
+            this._calendarDropdown.open(this.$.input.$.inputContainer);
+            this._ddOpened = true;
         }
     }
 

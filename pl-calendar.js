@@ -94,20 +94,16 @@ class PlCalendar extends PlElement {
 
     static template = html`
         <div class="weeks">
-            <pl-repeat items="[[_weekDays]]">
-                <template>
-                    <span>[[item]]</span>
-                </template>
-            </pl-repeat>
+            <template d:repeat="[[_weekDays]]">
+                <span>[[item]]</span>
+            </template>
         </div>
         <div class="days">
-            <pl-repeat items="[[_days]]">
-                <template>
-                    <div on-click="[[onDayClick]]" selected$="[[item.selected]]" current$="[[item.current]]" disabled$="[[item.disabled]]">
-                        [[item.formattedDay]]
-                    </div>
-                </template>
-            </pl-repeat>
+            <template d:repeat="[[_days]]">
+                <div on-click="[[onDayClick]]" selected$="[[item.selected]]" current$="[[item.current]]" disabled$="[[item.disabled]]">
+                    [[item.formattedDay]]
+                </div>
+            </template>
         </div>
     `;
     
