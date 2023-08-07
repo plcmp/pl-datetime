@@ -117,7 +117,7 @@ class PlTimePicker extends PlElement {
             <div class="outerDot" odd$="[[_isOdd(mode, _value)]]"></div>
         </div>
 
-        <pl-dom-if if="[[_equal(mode, 'hours')]]">
+        <pl-dom-if if="[[_equal(mode, 'hours')]]" restamp>
             <template>
                 <template d:repeat="[[_getNumbers('12', size)]]" d:as="digit">
                         <span
@@ -140,7 +140,7 @@ class PlTimePicker extends PlElement {
                 </template>
             </template>
         </pl-dom-if>
-        <pl-dom-if is="dom-if" if="[[_equal(mode, 'minutes')]]">
+        <pl-dom-if is="dom-if" if="[[_equal(mode, 'minutes')]]" restamp>
             <template>
                 <template d:repeat="[[_getNumbers('12', size, '0', '5')]]" d:as="digit">
                             <span
