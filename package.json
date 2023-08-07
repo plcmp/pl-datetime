@@ -1,6 +1,6 @@
 {
     "name": "@plcmp/pl-datetime",
-    "version": "0.1.16",
+    "version": "0.1.17",
     "description": "Simple input with date selector.",
     "main": "pl-datetime.js",
     "repository": {
