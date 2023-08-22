@@ -44,7 +44,8 @@ class PlDateTime extends PlElement {
         _timepickerMode: { type: String },
         _ddOpened: { type: Boolean },
         type: { type: String, value: 'date', observer: '_typeChanged', reflectToAttribute: true } ,// date/datetime
-        readonly: { type: Boolean }
+        readonly: { type: Boolean },
+        fitInto: { type: Object }
     }
 
     static css = css`
@@ -154,7 +155,7 @@ class PlDateTime extends PlElement {
 
     onTodayClick() {
         this.$.input.value = dayjs().format(this._dateMask);
-        this._calendarDropdown.close();
+        this.$.dd.close();
     }
 
     _today() {
@@ -209,11 +210,10 @@ class PlDateTime extends PlElement {
         super.connectedCallback();
         //TODO Доработать маску при частичном удалении
 
-        this._calendarDropdown = this.$.dd;
         this.addEventListener('on-day-click', this._onDayClick);
         this.$.input.validators.push(this.validator.bind(this));
         //TODO: move to calendar
-        this._calendarDropdown.addEventListener('wheel', (ev) => {
+        this.$.dd.addEventListener('wheel', (ev) => {
             ev.stopPropagation();
             if (ev.wheelDelta > 0) {
                 this._currentDate = dayjs(this._currentDate).subtract(1, 'month');
@@ -228,8 +228,8 @@ class PlDateTime extends PlElement {
         this._dateMask = TYPES[t]?.mask ?? 'DD.MM.YYYY';
     }
     _onToggle(event) {
-        if (this._calendarDropdown.opened) {
-            this._calendarDropdown.close();
+        if (this.$.dd.opened) {
+            this.$.dd.close();
         } else {
             if (this.type === 'datetime') {
                 this._timepickerMode = 'hours';
@@ -237,7 +237,7 @@ class PlDateTime extends PlElement {
                 this._daySelected = false;
                 this._PrevDaySelected = null;
             }
-            this._calendarDropdown.open(this.$.input.$.inputContainer);
+            this.$.dd.open(this.$.input.$.inputContainer, this.fitInto);
             this._ddOpened = true;
         }
     }
@@ -267,12 +267,12 @@ class PlDateTime extends PlElement {
         let day = dayjs(event.detail.day).hour(+(this._hour??0)).minute(+(this._minute??0));
         this.$.input.value = day.format(this._dateMask);
         if (this.type === 'date' || this._timeSelected || event.detail.day.isSame(this._PrevDaySelected) )
-            this._calendarDropdown.close();
+        this.$.dd.close();
 
         this._PrevDaySelected = event.detail.day;
     }
     timeDone() {
-        if (this._daySelected) this._calendarDropdown.close();
+        if (this._daySelected) this.$.dd.close();
     }
     _eq(a,b) {
         return a === b;
