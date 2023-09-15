@@ -45,7 +45,8 @@ class PlDateTime extends PlElement {
         _ddOpened: { type: Boolean },
         type: { type: String, value: 'date', observer: '_typeChanged', reflectToAttribute: true } ,// date/datetime
         readonly: { type: Boolean },
-        fitInto: { type: Object }
+        fitInto: { type: Object },
+        stretch: { type: Boolean, reflectToAttribute: true }
     }
 
     static css = css`
@@ -62,6 +63,11 @@ class PlDateTime extends PlElement {
         }
         :host([type=datetime]){
             --content-width: 185px;
+        }
+
+        :host([stretch]) {
+            width: 100%;
+            flex-shrink: 1;
         }
 
         .header, .footer {
@@ -102,7 +108,7 @@ class PlDateTime extends PlElement {
     `;
 
     static  template = html`
-        <pl-input content-width="[[contentWidth]]" label-width="[[labelWidth]]" readonly="[[readonly]]" id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" orientation="[[orientation]]" disabled="[[disabled]]">
+        <pl-input stretch="[[stretch]]" content-width="[[contentWidth]]" label-width="[[labelWidth]]" readonly="[[readonly]]" id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" orientation="[[orientation]]" disabled="[[disabled]]">
             <slot name="prefix" slot="prefix"></slot>
             <slot name="suffix" slot="suffix"></slot>
             <pl-icon-button variant="link" hidden="[[isClearHidden(readonly, value)]]" slot="suffix" iconset="pl-default" size="12" icon="close" on-click="[[_clear]]"></pl-icon-button>
