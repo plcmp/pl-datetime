@@ -108,7 +108,7 @@ class PlDateTime extends PlElement {
     `;
 
     static  template = html`
-        <pl-input stretch="[[stretch]]" content-width="[[contentWidth]]" label-width="[[labelWidth]]" readonly="[[readonly]]" id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" orientation="[[orientation]]" disabled="[[disabled]]">
+        <pl-input exportparts="labeled-container,label,input-container,native-input" stretch="[[stretch]]" content-width="[[contentWidth]]" label-width="[[labelWidth]]" readonly="[[readonly]]" id="input" required="[[required]]" invalid="{{invalid}}" value="{{_formatted}}" label="[[label]]" orientation="[[orientation]]" disabled="[[disabled]]">
             <slot name="prefix" slot="prefix"></slot>
             <slot name="suffix" slot="suffix"></slot>
             <pl-icon-button variant="link" hidden="[[isClearHidden(readonly, value)]]" slot="suffix" iconset="pl-default" size="12" icon="close" on-click="[[_clear]]"></pl-icon-button>
