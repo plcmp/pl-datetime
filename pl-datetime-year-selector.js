@@ -15,28 +15,17 @@ class PlDateTimeYearSelector extends PlElement {
     static css = css`
         :host{
             display: flex;
-            gap: var(--space-sm);
-            flex-direction: row;    
-            text-align: center;
+            flex-direction: row;
+            align-items: center;
+            gap: var(--pl-space-sm);
             user-select: none;
-        }
-
-        pl-icon{
-            cursor: pointer;
-            --pl-icon-fill-color: var(--grey-dark);
-            height: 16px;
-            width: 16px;
-        }
-
-        pl-icon:hover {
-            --pl-icon-fill-color: var(--text-color);
         }
     `;
 
     static template = html`
-        <pl-icon icon="chevron-left" iconset="pl-default" on-click="[[_prevYear]]"></pl-icon>
-        <span>[[_format(date)]]</span>
-        <pl-icon icon="chevron-right" iconset="pl-default" on-click="[[_nextYear]]"></pl-icon>
+        <pl-icon-button variant="link" icon="chevron-left" iconset="pl-default" on-click="[[_prevYear]]"></pl-icon-button>
+        [[_format(date)]]
+        <pl-icon-button variant="link" icon="chevron-right" iconset="pl-default"  on-click="[[_nextYear]]"></pl-icon-button>
     `;
 
     _format(date) {

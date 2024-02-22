@@ -15,8 +15,8 @@ class PlTimePicker extends PlElement {
     static css = css`
         :host {
             display: block;
-            width: var(--nf-datetime-clock-size, 192px);
-            height: var(--nf-datetime-clock-size, 192px);
+            width: var(--pl-datetime-clock-size, 192px);
+            height: var(--pl-datetime-clock-size, 192px);
             cursor: default;
         }
         .circle {
@@ -38,17 +38,16 @@ class PlTimePicker extends PlElement {
             pointer-events: none;
             user-select: none;
     
-            font: var(--nf-font-md);
-            color: var(--nf-black);
-            line-height: 24px;
+            font: var(--pl-text-font);
+            color: var(--pl-font-colot);
             border-radius: 50%;
         }
         .number:hover {
-           color: var(--nf-black);
-           background: var(--nf-gray);
+            cursor:pointer;
+            color: var(--nf-black);
+            background: var(--nf-gray);
         }
-        .number[small] {
-        }
+       
         .number[selected] {
             font: var(--nf-font-bold-md);
              line-height: 23px;
@@ -79,6 +78,7 @@ class PlTimePicker extends PlElement {
             height: 8px;
             border-radius: 50%;
         }
+
         .outerDot {
             position: absolute;
             box-sizing: content-box;
@@ -89,6 +89,7 @@ class PlTimePicker extends PlElement {
             height: 0;
             border-radius: 50%;
         }
+
         .outerDot[odd] {
             background: #ff1018;
             width: 0;

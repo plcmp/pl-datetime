@@ -27,66 +27,56 @@ class PlCalendar extends PlElement {
             flex-direction: column;
             user-select: none;
             box-sizing: border-box;
+            color: var(--pl-text-color);
+            font: var(--pl-text-font);
+            text-align: center;
+            gap: var(--pl-space-sm);
         }
 
         .weeks {
-            margin:var(--space-sm) 0;
             display: grid;
-            color: var(--text-color);
-            font: var(--text-font);
             grid-template-columns: repeat(7, 1fr);
-            gap: var(--space-sm);
+            gap: var(--pl-space-sm);
         }
 
-        .weeks span {
-            width: var(--base-size-xxs);
-            text-align: center;
+        .weeks div:nth-child(7n-1),
+        .weeks div:nth-child(7n) {
+            color: var(--pl-negative-base);
         }
 
         .days {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            color: var(--text-color);
-            font: var(--text-font);
-            box-sizing: border-box;
-            gap: var(--space-xs);
+            gap: var(--pl-space-xs);
         }
 
         .days div {
-            width: var(--base-size-sm);
-            height: var(--base-size-sm);
-            text-align: center;
-            cursor: pointer;
-            align-items: center;
             display: flex;
+            width: calc(var(--pl-base-size) - 2px);
+            height: calc(var(--pl-base-size) - 2px);
+            align-items: center;
             justify-content: center;
-            color: var(--grey-dark);
+            cursor: pointer;
+            border-radius: var(--pl-border-radius);
+        }
+
+        .days div:not([current]) {
             visibility: hidden;
         }
 
-        .days div[selected], .days div:hover {
-            color: #fff !important;
-            background: var(--primary-base);
-            border-radius: var(--border-radius);
+        .days div:nth-child(7n-1),
+        .days div:nth-child(7n) {
+            color: var(--pl-negative-base);
         }
 
-        .days div[current]:not([disabled]):nth-child(7n-1), .days div[current]:not([disabled]):nth-child(7n)
-        {
-            color: var(--negative-base);
-        }
-
-        .weeks span:nth-child(7n-1), .weeks span:nth-child(7n)
-        {
-            color: var(--negative-base);
-        }
-        
-        .days div[current] {
-            color: var(--black-base);
-            visibility: visible;
+        .days div[selected], 
+        .days div:hover {
+            color: var(--pl-background-color);
+            background: var(--pl-primary-base);
         }
 
         .days div[disabled] {
-            color: var(--grey-light);
+            color: var(--pl-grey-light);
             cursor: not-allowed;
             pointer-events: none;
         }
@@ -94,16 +84,12 @@ class PlCalendar extends PlElement {
 
     static template = html`
         <div class="weeks">
-            <template d:repeat="[[_weekDays]]">
-                <span>[[item]]</span>
-            </template>
+            <div d:repeat="[[_weekDays]]">[[item]]</div>
         </div>
         <div class="days">
-            <template d:repeat="[[_days]]">
-                <div on-click="[[onDayClick]]" selected$="[[item.selected]]" current$="[[item.current]]" disabled$="[[item.disabled]]">
-                    [[item.formattedDay]]
-                </div>
-            </template>
+            <div d:repeat="[[_days]]" on-click="[[onDayClick]]" selected$="[[item.selected]]" current$="[[item.current]]" disabled$="[[item.disabled]]">
+                [[item.formattedDay]]
+            </div>
         </div>
     `;
     

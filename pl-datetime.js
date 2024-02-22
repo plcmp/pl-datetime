@@ -59,25 +59,23 @@ class PlDateTime extends PlElement {
         }
 
         :host([type=date]){
-            --content-width: 145px;
+            --pl-content-width: 145px;
         }
         :host([type=datetime]){
-            --content-width: 185px;
+            --pl-content-width: 185px;
         }
 
         :host([stretch]) {
             width: 100%;
             flex-shrink: 1;
+            --pl-content-width: 100%;
         }
 
         .header, .footer {
             display: flex;
             flex-direction: row;
-            gap: var(--space-sm);
             justify-content: center;
-        }
-        .footer pl-button {
-            width: 100%;
+            height: var(--pl-base-size);
         }
 
         :host([disabled]) pl-icon-button {
@@ -85,25 +83,30 @@ class PlDateTime extends PlElement {
         }
 
         pl-dropdown {
-            background: var(--surface-color);
+            background: var(--pl-surface-color);
             box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.12);
-            border-radius: var(--border-radius);
+            border-radius: var(--pl-border-radius);
             box-sizing: border-box;
-            padding: var(--space-md) var(--space-md) var(--space-xs) var(--space-md);
+            padding: var(--pl-space-md);
         }
+
+        pl-dropdown::part(popover) {
+            background: var(--pl-surface-color);
+            box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.12);
+            border-radius: var(--pl-border-radius);
+            box-sizing: border-box;
+            padding: var(--pl-space-md);
+        }
+        
         .hf {
             display: flex;
-            padding-bottom: var(--space-sm);
-            border-bottom: 1px solid var(--grey-light);
         }
+        
         .pc {
-            padding-left: var(--space-sm);
-            margin-left: var(--space-sm);
-            border-left: 1px solid var(--grey-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-        }
-        .pc pl-time-picker {
-            margin-top:  var(--space-sm);
         }
     `;
 

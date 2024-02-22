@@ -1,7 +1,5 @@
 import { PlElement, html, css } from "polylib";
-
-import '@plcmp/pl-icon';
-import '@plcmp/pl-iconset-default';
+import '@plcmp/pl-icon-button';
 
 import dayjs from 'dayjs/esm/index.js';
 
@@ -20,33 +18,17 @@ class PlDateTimeMonthSelector extends PlElement {
     static css = css`
         :host{
             display: flex;
-            flex-direction: row;    
-            gap: var(--space-sm);
-            text-align: center;
+            flex-direction: row;
+            align-items: center;
+            gap: var(--pl-space-sm);
             user-select: none;
-
-        }
-
-        .month {
-            width: 75px;
-        }
-
-        pl-icon{
-            cursor: pointer;
-            --pl-icon-fill-color: var(--grey-dark);
-            height: 16px;
-            width: 16px;
-        }
-
-        pl-icon:hover {
-            --pl-icon-fill-color: var(--text-color);
         }
     `;
 
     static  template = html`
-        <pl-icon icon="chevron-left" iconset="pl-default" on-click="[[_prevMonth]]"></pl-icon>
-        <span class="month">[[_format(date)]]</span>
-        <pl-icon icon="chevron-right" iconset="pl-default"  on-click="[[_nextMonth]]"></pl-icon>
+        <pl-icon-button variant="link" icon="chevron-left" iconset="pl-default" on-click="[[_prevMonth]]"></pl-icon-button>
+        [[_format(date)]]
+        <pl-icon-button variant="link" icon="chevron-right" iconset="pl-default"  on-click="[[_nextMonth]]"></pl-icon-button>
     `;
 
     _format(date) {
